@@ -68,13 +68,14 @@ public class ReportService {
 
     public Report updateStatus(Long id, ReportStatus newStatus) {
         Report report = findReportById(id);
-        LocalDateTime now = LocalDateTime.now();
+        if (report.getStatus() == newStatus) {
+            return report;
+        }
 
+        LocalDateTime now = LocalDateTime.now();
         report.setStatus(newStatus);
         report.setUpdatedAt(now);
-        if (newStatus == ReportStatus.FIXED) {
-            report.setFixedAt(now);
-        }
+        report.setFixedAt(newStatus == ReportStatus.FIXED ? now : null);
 
         Report savedReport = reportRepository.save(report);
         log.info("Report {} status changed to {}", id, newStatus);
